@@ -18,5 +18,6 @@ public class TicketCreator {
 			}
 			
 		}
+		System.out.println("\n" + order.getOrderPrice() + " €");
 	}
 }

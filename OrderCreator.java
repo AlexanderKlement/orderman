@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.JTextArea;
+
 public class OrderCreator {
 
 	private Date now;
@@ -48,13 +50,29 @@ public class OrderCreator {
 	}
 	
 	public Float getOrderPrice() {
+		Float returnPrice = (float) 0.0;
 		if(menuItems == null)
 			return (float) 0.0;
 		for (MenuItem menuItem : menuItems) {
-			menuItem.getPrice();
+			returnPrice += menuItem.getPrice();
 		}
+		return returnPrice;
 	}
 	
+	public void updateTextPanel(JTextArea orderList) {
+		for (int i = 0; i < getMenuItems().size(); i++) {
+			orderList.append(getMenuItems().get(i).toString() + "\n");
+			for(int j=0; j < getMenuItems().get(i).numberOfOptions(); j++) {
+				orderList.append("       " + getMenuItems().get(i).optionsToString(j) + "\n");
+			}
+			
+		}
+	}
+
+	public void updatePrice(JTextArea priceTag) {
+		priceTag.setText(getOrderPrice() + " €");
+		
+	}
 	
 
 }

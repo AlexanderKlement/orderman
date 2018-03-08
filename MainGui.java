@@ -7,7 +7,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Panel;
-import java.awt.TextArea;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +17,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 public class MainGui extends JFrame {
 
@@ -28,7 +28,8 @@ public class MainGui extends JFrame {
 
 	private List<FoodButton> foodButtons;
 	private List<JButton> buttons = new ArrayList<>();
-	private TextArea tfDisplay;
+	public JTextArea currentOrderList;
+	public JTextArea priceTag;
 
 	public MainGui(List<FoodButton> foodButtons) {
 		// set Elements
@@ -53,9 +54,8 @@ public class MainGui extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					System.out.println("[MainGui]: Button clicked: " + e.getActionCommand());
 					FoodButton tempFoodButton = getFoodButtonByText(e.getActionCommand());
-					MenuItem tempMenuItem = new MenuItem(1, tempFoodButton.getName(), null);
+					MenuItem tempMenuItem = new MenuItem(1, tempFoodButton.getName(), null, tempFoodButton.getPrice());
 					if (tempFoodButton.hasOptions()){
 						//create options array:
 						Object[] options1 = new Object[tempFoodButton.numberOfOptions()];
@@ -76,6 +76,12 @@ public class MainGui extends JFrame {
 						tempMenuItem.setOptions(selectedOption);
 					} 
 					tempOrderCreator.addMenuItem(tempMenuItem);
+					
+					//Update JTextPanes (Order + Price)
+					currentOrderList.setText("");
+					tempOrderCreator.updateTextPanel(currentOrderList);
+					
+					tempOrderCreator.updatePrice(priceTag);
 				}
 			});
 			panelButtons.add(buttons.get(i));
@@ -94,17 +100,27 @@ public class MainGui extends JFrame {
 				tempOrderCreator.reset();
 			}
 		});
-
-		tfDisplay = new TextArea();
-
+		
+		//Textfield where the current order is shwon:
+		currentOrderList = new JTextArea(20, 40);
+		//TODO for later: make the list scrollable
+		//JScrollPane scrollPane = new JScrollPane(tfDisplay); 
+		currentOrderList.setEditable(false);
+		
+		//Pricetag:
+		priceTag = new JTextArea(20,40);
+		priceTag.setEditable(false);
+		
+		
 		// Set right gridlayout
-		Panel sendAndShowGrid = new Panel(new GridLayout(2, 1));
-		sendAndShowGrid.add(tfDisplay);
+		Panel sendAndShowGrid = new Panel(new GridLayout(3, 1));
+		sendAndShowGrid.add(currentOrderList);
+		sendAndShowGrid.add(priceTag);
 		sendAndShowGrid.add(sendButton);
 
 		// Set Main GridbagLayout
-		addComponent(c, gbl, panelButtons, 0, 0, 2, 2, 1.0, 1.0);
-		addComponent(c, gbl, sendAndShowGrid, 2, 0, 1, 1, 0, 1.0);
+		addComponent(c, gbl, panelButtons, 0, 0, 1, 1, 1.0, 1.0);
+		addComponent(c, gbl, sendAndShowGrid, 1, 0, 1, 1, 1.0, 1.0);
 
 		// make Fullscreen:
 		Toolkit tk = Toolkit.getDefaultToolkit();
