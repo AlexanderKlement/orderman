@@ -18,14 +18,18 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.FontUIResource;
 
-public class MainGui extends JFrame {
+public class MainGui extends JFrame implements ListSelectionListener {
 
 	/**
 	 * 
@@ -35,14 +39,22 @@ public class MainGui extends JFrame {
 	// TODO add clock on the upper right
 	private List<FoodButton> foodButtons;
 	private List<JButton> buttons = new ArrayList<>();
-	public JTextArea currentOrderList;
+	// public JTextArea currentOrderList;
+	public JList<String> currentOrderList;
 	public JTextArea priceTag;
+	public OrderCreator tempOrderCreator;
+	private Boolean preventFromFireingTwoTimes;
+	private Boolean updateHandler;
 
 	public MainGui(List<FoodButton> foodButtons) {
 		// set Elements
 		this.foodButtons = foodButtons;
 
-		//this.setDefaultLookAndFeelDecorated(true);
+		// Prevent from fireing 2 times:
+		this.preventFromFireingTwoTimes = true;
+		this.updateHandler = true;
+
+		// this.setDefaultLookAndFeelDecorated(true);
 		// setup main windows:
 		JFrame mainJFrame = new JFrame();
 		mainJFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -52,7 +64,7 @@ public class MainGui extends JFrame {
 		mainContainer.setLayout(gbl);
 
 		// Create new Order:
-		OrderCreator tempOrderCreator = new OrderCreator();
+		tempOrderCreator = new OrderCreator();
 
 		// Define Fonts:
 		Font orderListFont = new Font("Serif", Font.BOLD, 27);
@@ -72,7 +84,7 @@ public class MainGui extends JFrame {
 					FoodButton tempFoodButton = getFoodButtonByText(e.getActionCommand());
 					MenuItem tempMenuItem = new MenuItem(1, tempFoodButton.getName(), null, tempFoodButton.getPrice());
 					if (tempFoodButton.hasOptions()) {
-						//Enlarge buttons:
+						// Enlarge buttons:
 						UIManager.put("OptionPane.buttonFont", new FontUIResource(dialogButtonFont));
 						// create options array:
 						Object[] options1 = new Object[tempFoodButton.numberOfOptions()];
@@ -91,13 +103,7 @@ public class MainGui extends JFrame {
 					}
 					tempOrderCreator.addMenuItem(tempMenuItem);
 
-					// Update JTextPanes (Order + Price)
-
-					resetEast();
-
-					tempOrderCreator.updateTextPanel(currentOrderList);
-
-					tempOrderCreator.updatePrice(priceTag);
+					resetListAndPrice();
 
 				}
 			});
@@ -119,13 +125,17 @@ public class MainGui extends JFrame {
 			}
 		});
 
-		// Textfield where the current order is shwon:
-		currentOrderList = new JTextArea(7, 1);
-		JScrollPane currentOrderListScrollable = new JScrollPane(currentOrderList,
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		// JScrollPane scrollPane = new JScrollPane(tfDisplay);
-		currentOrderList.setEditable(false);
-		currentOrderList.setFont(orderListFont);
+		JScrollPane currentOrderListScrollable = createCurrentOrderList();
+
+		/*
+		 * // Textfield where the current order is shwon: currentOrderList = new
+		 * JTextArea(7, 1); JScrollPane currentOrderListScrollable = new
+		 * JScrollPane(currentOrderList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+		 * JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // JScrollPane scrollPane = new
+		 * JScrollPane(tfDisplay); currentOrderList.setEditable(false);
+		 * currentOrderList.setFont(orderListFont);
+		 * 
+		 */
 
 		// Pricetag:
 		priceTag = new JTextArea(1, 1);
@@ -185,9 +195,53 @@ public class MainGui extends JFrame {
 		cont.add(c);
 	}
 
+	/*
+	 * public void resetEast() { currentOrderList.setText("");
+	 * currentOrderList.setBackground(Color.white); }
+	 * 
+	 */
+
 	public void resetEast() {
-		currentOrderList.setText("");
+		currentOrderList.removeAll();
 		currentOrderList.setBackground(Color.white);
+	}
+
+	private JScrollPane createCurrentOrderList() {
+		currentOrderList = new JList<>();
+		currentOrderList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+		JScrollPane jScrollPane = new JScrollPane(currentOrderList);
+
+		ListSelectionModel listSelectionModel = currentOrderList.getSelectionModel();
+		listSelectionModel.addListSelectionListener(this);
+		// listSelectionModel.setValueIsAdjusting(true);
+
+		return jScrollPane;
+	}
+
+	public void resetListAndPrice() {
+		resetEast();
+		tempOrderCreator.updateTextPanel(currentOrderList);
+		tempOrderCreator.updatePrice(priceTag);
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		if (updateHandler) {
+			updateHandler = false;
+			if (preventFromFireingTwoTimes) {
+				preventFromFireingTwoTimes = false;
+				System.out.println("First: " + e.getFirstIndex());
+				System.out.println("Last: " + e.getLastIndex());
+				tempOrderCreator.listFlag = false;
+				tempOrderCreator.removeItemById(e.getFirstIndex());
+				resetListAndPrice();
+			} else {
+				preventFromFireingTwoTimes = true;
+			}
+		} else {
+			updateHandler = true;
+		}
 	}
 
 }
