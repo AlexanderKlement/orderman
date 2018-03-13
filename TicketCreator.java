@@ -3,6 +3,7 @@ package orderman_lidolana_v1;
 
 public class TicketCreator {
 	private OrderCreator order;
+	public String filePath = "/home/kalle/lidolana/";
 
 	public TicketCreator(OrderCreator order) {
 		super();
@@ -19,5 +20,8 @@ public class TicketCreator {
 			
 		}
 		System.out.println("\n" + order.getOrderPrice() + " €");
+		//TODO: implement this after testing!
+		new Order2PostScript(this.order, filePath, 3);
+		
 	}
 }

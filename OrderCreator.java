@@ -65,7 +65,7 @@ public class OrderCreator {
 		return returnPrice;
 	}
 
-	public void updateTextPanel(JList currentOrderList) {
+	public void updateTextPanel(JList<String> currentOrderList) {
 		DefaultListModel<String> model = new DefaultListModel<>();
 		String tempString;
 		for (int i = 0; i < getMenuItems().size(); i++) {
