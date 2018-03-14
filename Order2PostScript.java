@@ -72,7 +72,7 @@ public class Order2PostScript {
 		this.textLengthPoint += yShiftOrderListMinimum;
 		
 		Integer textLengthMM = point2mm(textLengthPoint);
-		return round2ten(textLengthMM);
+		return roundUp2ten(textLengthMM);
 	}
 
 	/**
@@ -174,8 +174,8 @@ public class Order2PostScript {
 		return (int) (mm/0.35);
 	}
 	
-	public static Integer round2ten(Integer number) {
-		return Math.round((number/10))*10;
+	public static Integer roundUp2ten(Integer number) {
+		return (int) ((Math.ceil(number/10))*10);
 	}
 
 }

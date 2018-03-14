@@ -45,6 +45,12 @@ public class MainGui extends JFrame implements ListSelectionListener {
 	public OrderCreator tempOrderCreator;
 	private Boolean preventFromFireingTwoTimes;
 	private Boolean updateHandler;
+	
+	//Fonts:
+	public static Font orderListFont = new Font("Serif", Font.BOLD, 27);
+	public static Font priceTagFont = new Font("Serif", Font.BOLD, 37);
+	public static Font buttonFont = new Font("Serif", Font.BOLD, 27);
+	public static Font dialogButtonFont = new Font("Serif", Font.PLAIN, 35);
 
 	public MainGui(List<FoodButton> foodButtons) {
 		// set Elements
@@ -67,10 +73,7 @@ public class MainGui extends JFrame implements ListSelectionListener {
 		tempOrderCreator = new OrderCreator();
 
 		// Define Fonts:
-		Font orderListFont = new Font("Serif", Font.BOLD, 27);
-		Font priceTagFont = new Font("Serif", Font.BOLD, 37);
-		Font buttonFont = new Font("Serif", Font.BOLD, 27);
-		Font dialogButtonFont = new Font("Serif", Font.PLAIN, 35);
+		
 
 		// setup food buttons
 		Panel panelButtons = new Panel(new GridLayout(3, 3));
@@ -208,6 +211,7 @@ public class MainGui extends JFrame implements ListSelectionListener {
 
 	private JScrollPane createCurrentOrderList() {
 		currentOrderList = new JList<>();
+		currentOrderList.setFont(orderListFont);
 		currentOrderList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		JScrollPane jScrollPane = new JScrollPane(currentOrderList);
