@@ -16,9 +16,9 @@ import javax.swing.SwingUtilities;
 
 public class Orderman {
 	
-	private static String hostname = "10.0.0.32";
+	private static String hostname = "192.168.0.150";
 	private static Integer port = 631;
-	private static String pathToFiles = "\\home\\kalle\\lidolana";
+	private static String pathToFiles = "/home/kalle/lidolana";
 
 	public static void main(String[] args) {
 		List<FoodButton> foodButtons = new ArrayList<FoodButton> ();

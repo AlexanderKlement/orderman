@@ -20,6 +20,7 @@ public class PrintHandler implements Runnable {
 		this.file = file;
 		this.printer = printer;
 		this.lengthOfMedia = lengthOfMedia;
+		System.out.println("[Printhandler started]: " + file + " " + printer + " " + lengthOfMedia);
 	}
 
 	@Override

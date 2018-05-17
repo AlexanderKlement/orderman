@@ -26,7 +26,7 @@ public class Printer implements Runnable {
 		this.shutdown = false;
 
 		// check Environment
-		if (checkForFolder())
+		if (!checkForFolder())
 			throw new FileNotFoundException();
 	}
 
@@ -67,28 +67,43 @@ public class Printer implements Runnable {
 			}
 			// get files:
 			File[] listOfFiles = folder.listFiles();
+			
+			System.out.println("[Printer]: Found this files:");
+			for (int i = 0; i < listOfFiles.length; i++) {
+				System.out.println(listOfFiles[i]);
+			}
 
 			String[] splittedFilename;
 
 			for (int i = 0; i < listOfFiles.length; i++) {
-
+				
 				// Directories simply ignored
 				if (listOfFiles[i].isFile()) {
+					System.out.println("[Printer]: Doing File Nr: " + listOfFiles[i]);
 					// get paper length
 					splittedFilename = listOfFiles[i].getName().split("_");
+					System.out.println("Splitted Filename:");
+					for (int j = 0; j < splittedFilename.length; j++) {
+						System.out.println(splittedFilename[j]);
+					}
+					
 					// move to new folder
 					File newFilePath = new File(folder, folderName);
 					try {
 						Integer.parseInt(splittedFilename[0]);
 					} catch (Exception e) {
+						System.err.println("[Printer]: Unable to print file: " + listOfFiles[i]);
 						newFilePath = new File(folder, unprintableFile);
 						listOfFiles[i].renameTo(new File(newFilePath, listOfFiles[i].getName()));
 						continue;
 					}
-					listOfFiles[i].renameTo(new File(newFilePath, listOfFiles[i].getName()));
-
+					
+					File file2Print = new File(newFilePath, listOfFiles[i].getName());
+					listOfFiles[i].renameTo(file2Print);
+					
+					
 					try {
-						InputStream is = new FileInputStream(listOfFiles[i].getAbsolutePath());
+						InputStream is = new FileInputStream(file2Print.getAbsolutePath());
 						PrintHandler ph = new PrintHandler(is, epson, Integer.parseInt(splittedFilename[0]));
 						ph.run();
 
