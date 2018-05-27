@@ -51,8 +51,13 @@ public class MainGui extends JFrame implements ListSelectionListener {
 	public static Font priceTagFont = new Font("Serif", Font.BOLD, 37);
 	public static Font buttonFont = new Font("Serif", Font.BOLD, 27);
 	public static Font dialogButtonFont = new Font("Serif", Font.PLAIN, 35);
+	
+	//TicketNumber 
+	private Integer ticketNumber;
 
 	public MainGui(List<FoodButton> foodButtons) {
+		
+		this.ticketNumber = 0;
 		// set Elements
 		this.foodButtons = foodButtons;
 
@@ -115,13 +120,14 @@ public class MainGui extends JFrame implements ListSelectionListener {
 		}
 
 		// Setup right panel
-		Button sendButton = new Button("send");
+		Button sendButton = new Button("senden");
+		sendButton.setFont(new Font("Arial", Font.BOLD, 50));
 		sendButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				tempOrderCreator.setNow(new Date(System.currentTimeMillis()));
-				TicketCreator ticketCreator = new TicketCreator(tempOrderCreator);
+				TicketCreator ticketCreator = new TicketCreator(tempOrderCreator, nextTicketNumber());
 				ticketCreator.sendOrder();
 				tempOrderCreator.reset();
 				currentOrderList.setBackground(Color.green);
@@ -246,6 +252,11 @@ public class MainGui extends JFrame implements ListSelectionListener {
 		} else {
 			updateHandler = true;
 		}
+	}
+	
+	private Integer nextTicketNumber() {
+		ticketNumber++;
+		return ticketNumber;
 	}
 
 }

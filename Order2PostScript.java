@@ -19,26 +19,30 @@ public class Order2PostScript {
 
 	public Integer fontSizeTicketNumber = 23;
 	public Integer fontSizeArticles = 13;
-	//public Integer fontSizePriceTag = 23;
-	
+	public Integer fontSizeDate = 10;
+	// public Integer fontSizePriceTag = 23;
+
 	public Integer xShiftTicketNumber = 20;
 	public Integer xShiftOrderList = 30;
-	//public Integer xShiftPriceTag = 20;
-	
-	public Integer yShiftTicketNumber = 15; //From Top!
-	public Integer yShiftOrderListMinimum = 10; //Attention: only minimum from bottom
-	//public Integer yShiftPriceTagMinimum = 10; //Attention: only minimum from bottom
-	
+	public Integer xShiftDate = 30;
+	// public Integer xShiftPriceTag = 20;
+
+	public Integer yShiftTicketNumber = 15; // From Top!
+	public Integer yShiftOrderListMinimum = 10; // Attention: only minimum from bottom
+	// public Integer yShiftPriceTagMinimum = 10; //Attention: only minimum from
+	// bottom
+
 	public Integer spacebetweenOrdersInOrderList = 2;
 	public Integer spaceBetweenTicketNumberAndOrderList = 5;
-	//public Integer spaceBetweenOrderListAndSeparator = 2;
-	//public Integer spaceBetweenSeparatorAndPriceTag = 2;
+	public Integer spaceBetweenOrderListAndDate = 5;
+	// public Integer spaceBetweenOrderListAndSeparator = 2;
+	// public Integer spaceBetweenSeparatorAndPriceTag = 2;
 
 	public Order2PostScript(OrderCreator ordercreator, String filepath, Integer ticketNumber) {
 		this.ordercreator = ordercreator;
 		this.filePath = filepath;
 		this.ticketNumber = ticketNumber;
-		
+
 		this.textLengthPoint = 0;
 		this.paperLengthMM = calcPaperLengthMM();
 
@@ -52,6 +56,7 @@ public class Order2PostScript {
 
 		printTickerNumber();
 		printOrders();
+		addDate();
 
 		// writeEOF();
 
@@ -68,11 +73,13 @@ public class Order2PostScript {
 		this.textLengthPoint += yShiftTicketNumber;
 		this.textLengthPoint += fontSizeTicketNumber;
 		this.textLengthPoint += spaceBetweenTicketNumberAndOrderList;
-		this.textLengthPoint += this.ordercreator.getMenuItems().size() * (spacebetweenOrdersInOrderList + fontSizeArticles);
+		this.textLengthPoint += this.ordercreator.getMenuItems().size()
+				* (spacebetweenOrdersInOrderList + fontSizeArticles);
 		this.textLengthPoint += yShiftOrderListMinimum;
-		
+
 		Integer textLengthMM = point2mm(textLengthPoint);
-		return roundUp2ten(textLengthMM);
+		// TODO: change this back
+		return roundUp2ten(textLengthMM) + 10;
 	}
 
 	/**
@@ -83,8 +90,9 @@ public class Order2PostScript {
 		Date date = new Date();
 		date.setTime(System.currentTimeMillis());
 		@SuppressWarnings("deprecation")
-		String filename = String.valueOf(paperLengthMM) + "_" + String.valueOf(date.getYear()) + String.valueOf(date.getMonth())
-				+ String.valueOf(date.getDay()) + "-" + String.valueOf(date.getHours()) + ":"
+		String filename = String.valueOf(paperLengthMM) + "_" + String.valueOf(date.getYear())
+				+ String.valueOf(date.getMonth()) + String.valueOf(date.getDay()) + "-"
+				+ String.valueOf(date.getHours()) + ":"
 				+ String.valueOf(date.getMinutes() + ":" + String.valueOf(date.getSeconds()));
 		this.creationDateAndTime = filename;
 		String pathAndName = this.filePath + filename + ".ps";
@@ -161,21 +169,34 @@ public class Order2PostScript {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
+	private void addDate() {
+		setFontAndSize(font, fontSizeDate);
+		selectLocation(xShiftDate,
+				startPlacePoints() - fontSizeTicketNumber - spaceBetweenTicketNumberAndOrderList
+						- this.ordercreator.getMenuItems().size() * (fontSizeArticles + spacebetweenOrdersInOrderList)
+						- spaceBetweenOrderListAndDate);
+		printwriter.println("(" + this.ordercreator.getNow().getDay() + "." + this.ordercreator.getNow().getMonth()
+				+ "." + (this.ordercreator.getNow().getYear() - 100) + "\t" + this.ordercreator.getNow().getHours() + ":"
+				+ this.ordercreator.getNow().getMinutes() + ") show");
+
+	}
+
 	private void cleanUp() {
 		printwriter.println("showpage");
 		printwriter.close();
 	}
-	
+
 	public static Integer point2mm(Integer point) {
-		return (int) (point/2.83);
+		return (int) (point / 2.83);
 	}
-	
+
 	public static Integer mm2point(Integer mm) {
-		return (int) (mm/0.35);
+		return (int) (mm / 0.35);
 	}
-	
+
 	public static Integer roundUp2ten(Integer number) {
-		return (int) ((Math.ceil(number/10))*10);
+		return (int) (Math.ceil(number / 10) * 10);
 	}
 
 }
